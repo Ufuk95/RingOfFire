@@ -1,7 +1,40 @@
+@import '../app.component.scss';
+
 .start-screen {
-    background-color: #404040;
+    background: linear-gradient(to bottom,
+            black 0%, // Oben vollständig schwarz
+            rgb(4, 20, 23) 50%, // Mitte rgb(4, 20, 23)
+            rgb(1, 8, 10) 100% // Unten rgb(1, 8, 10)
+        );
     width: 100vw;
     height: 100vh;
     max-width: 100%;
-    
+    @include dFlex();
+    flex-direction: column;
+
+    >img {
+        height: 100%;
+        position: relative;
+    }
+
+    >div {
+        @include dFlex();
+        >button {
+            position: absolute;
+            bottom: 100px;
+            width: 200px;
+            height: 50px;
+            font-size: 32px;
+            color: white;
+            background-color: rgba(0, 0, 0, 0.415);
+            border-radius: 12px;
+
+            &:hover {
+                background-color: black;
+                cursor: pointer;
+                color: rgb(224, 60, 14);
+            }
+        }
+    }
+
 }
