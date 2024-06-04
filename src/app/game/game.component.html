@@ -6,24 +6,24 @@
 
 
 
-<div class="field">
+<div class="field" style="background-image: url('assets/img/background-images/field.jpg');">
 
     <!-- card stack -->
     <div class="card-stack">
         <img [ngStyle]="{'right.px': i * 5}" *ngFor="let c of [0, 1, 2, 3]; let i = index;"
-            src="/assets/img/card_cover.png" alt="">
+            src="assets/img/card_cover.png" alt="">
 
-        <img (click)="takeCard()" class="top-card" style="right: 25px" src="/assets/img/card_cover.png" alt="">
+        <img (click)="takeCard()" class="top-card" style="right: 25px" src="assets/img/card_cover.png" alt="">
 
 
 
         <!-- stack for played cards -->
         <img *ngFor="let card of game.playedCards , let i = index;" class="played-card"
-            src="/assets/img/card-images/{{ card }}.png" alt="">
+            src="assets/img/card-images/{{ card }}.png" alt="">
 
         <!-- current card animation -->
         <img (click)="takeCard()" *ngIf="pickCardAnimation" class="pick-card" style="right: 25px"
-            src="/assets/img/card-images/{{currentCard}}.png" alt="">
+            src="assets/img/card-images/{{currentCard}}.png" alt="">
     </div>
 </div>
 
