@@ -1,4 +1,4 @@
-export class Game{
+export class Game {
     public players: string[] = [];
     public stack: string[] = [];
     public playedCards: string[] = [];
@@ -6,22 +6,31 @@ export class Game{
 
 
 
-    constructor(){
+    constructor() {
         for (let i = 1; i < 14; i++) {
             this.stack.push('hearts_' + i),
-            this.stack.push('ace_' + i),
-            this.stack.push('clubs_' + i),
-            this.stack.push('diamonds_' + i)
+                this.stack.push('ace_' + i),
+                this.stack.push('clubs_' + i),
+                this.stack.push('diamonds_' + i)
         }
         this.shuffle(this.stack);
     }
 
 
-     // Fisher-Yates Shuffle Algorithmus
-     private shuffle(array: string[]): void {
+    // Fisher-Yates Shuffle Algorithmus
+    private shuffle(array: string[]): void {
         for (let i = array.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
             [array[i], array[j]] = [array[j], array[i]];
+        }
+    }
+
+    public toJSON(){
+        return {
+            players: this.players,
+            stack: this.stack,
+            playedCards: this.playedCards,
+            currentPlayer: this.currentPlayer
         }
     }
 }

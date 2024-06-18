@@ -7,6 +7,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatDialog } from '@angular/material/dialog';
 import { DialogAddPlayerComponent } from '../dialog-add-player/dialog-add-player.component';
 import { GameInfoComponent } from '../game-info/game-info.component';
+import { FirebaseService } from '../firebase-service/firebase.service';
+
 
 @Component({
   selector: 'app-game',
@@ -18,8 +20,15 @@ import { GameInfoComponent } from '../game-info/game-info.component';
 export class GameComponent implements OnInit {
   pickCardAnimation = false;
   currentCard: string = '';
-  game: Game = new Game();
+  game!: Game;
   top: { [klass: string]: any; } | null | undefined;
+
+
+  
+  constructor(public dialog: MatDialog, private gameService: FirebaseService){
+
+
+  }
 
 
   ngOnInit(): void {
@@ -27,16 +36,14 @@ export class GameComponent implements OnInit {
   }
 
   newGame() {
-    console.log(this.game)
+    this.game = new Game();
+    console.log(this.game);
   }
 
   takeCard() {
     if (!this.pickCardAnimation) {
       this.currentCard = this.game.stack.pop() as string;
       this.pickCardAnimation = true;
-
-      // console.log(this.game);
-      // console.log(this.currentCard);
       this.game.currentPlayer++,
       this.game.currentPlayer = this.game.currentPlayer % this.game.players.length
       setTimeout(() => {
@@ -45,9 +52,6 @@ export class GameComponent implements OnInit {
       }, 1000);
       console.log(this.game);
     }
-  }
-  constructor(public dialog: MatDialog){
-
   }
 
   openDialog(): void {
