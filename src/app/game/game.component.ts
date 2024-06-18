@@ -7,32 +7,37 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatDialog } from '@angular/material/dialog';
 import { DialogAddPlayerComponent } from '../dialog-add-player/dialog-add-player.component';
 import { GameInfoComponent } from '../game-info/game-info.component';
-import { FirebaseService } from '../firebase-service/firebase.service';
-
+import { ActivatedRoute } from '@angular/router';
+import { Firestore, collection, collectionData, doc, docData, addDoc } from '@angular/fire/firestore';
+import { Injectable, inject } from '@angular/core';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-game',
   standalone: true,
   imports: [CommonModule, PlayerComponent, MatButtonModule, MatIconModule, GameInfoComponent],
   templateUrl: './game.component.html',
-  styleUrl: './game.component.scss'
+  styleUrls: ['./game.component.scss']
 })
 export class GameComponent implements OnInit {
+
+  firestore: Firestore = inject(Firestore);
+
   pickCardAnimation = false;
   currentCard: string = '';
   game!: Game;
-  top: { [klass: string]: any; } | null | undefined;
 
-
-  
-  constructor(public dialog: MatDialog, private gameService: FirebaseService){
-
-
-  }
-
+  constructor(public dialog: MatDialog, private route: ActivatedRoute) {}
 
   ngOnInit(): void {
     this.newGame();
+    this.route.params.subscribe((params) => {
+      console.log(params['id']);
+      this.subscribeToGame(params['id']);
+    });
+    
+    // Test-Daten hinzufügen, um zu sehen, ob es in Firebase erscheint
+    // this.addGame(this.game.toJSON());
   }
 
   newGame() {
@@ -44,11 +49,11 @@ export class GameComponent implements OnInit {
     if (!this.pickCardAnimation) {
       this.currentCard = this.game.stack.pop() as string;
       this.pickCardAnimation = true;
-      this.game.currentPlayer++,
-      this.game.currentPlayer = this.game.currentPlayer % this.game.players.length
+      this.game.currentPlayer++;
+      this.game.currentPlayer = this.game.currentPlayer % this.game.players.length;
       setTimeout(() => {
         this.game.playedCards.push(this.currentCard);
-        this.pickCardAnimation = false
+        this.pickCardAnimation = false;
       }, 1000);
       console.log(this.game);
     }
@@ -62,5 +67,34 @@ export class GameComponent implements OnInit {
         this.game.players.push(name);
       }
     });
+  }
+
+  async addGame(game: { game: string }) {
+    try {
+      const docRef = await addDoc(this.getGameRef(), game);
+      console.log("Document written with ID: ", docRef.id);
+    } catch (err) {
+      console.error("Error adding document: ", err);
+    }
+  }
+
+  subscribeToGame(gameId: string) {
+    const gameDocRef = this.getSingleDocRef('games', gameId);
+    const game$ = docData(gameDocRef) as Observable<Game>;
+    game$.subscribe((game: any) => {
+      console.log('Game update', game);
+      this.game.currentPlayer = game.currentPlayer;
+      this.game.playedCards = game.playedCards;
+      this.game.players = game.players;
+      this.game.stack = game.stack;
+    });
+  }
+
+  getGameRef() {
+    return collection(this.firestore, 'games');
+  }
+
+  getSingleDocRef(colId: string, docId: string) {
+    return doc(this.firestore, colId, docId);
   }
 }
