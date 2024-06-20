@@ -1,6 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
+import { Game } from '../../models/game';
+import { GameService } from '../game.service';
 
 @Component({
   selector: 'app-start-screen',
@@ -10,13 +12,15 @@ import { Router } from '@angular/router';
   styleUrl: './start-screen.component.scss'
 })
 export class StartScreenComponent {
+  game!: Game;
 
-  constructor(private router: Router
+  constructor(private gameService: GameService, private router: Router
   ){
 
   }
 
   newGame(){
-    this.router.navigateByUrl('/game')
+    let game = new Game();
+    this.gameService.addGame(game.toJSON());
   }
 }

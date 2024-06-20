@@ -11,6 +11,7 @@ import { ActivatedRoute } from '@angular/router';
 import { Firestore, collection, collectionData, doc, docData, addDoc } from '@angular/fire/firestore';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
+import { GameService } from '../game.service';
 
 @Component({
   selector: 'app-game',
@@ -27,7 +28,7 @@ export class GameComponent implements OnInit {
   currentCard: string = '';
   game!: Game;
 
-  constructor(public dialog: MatDialog, private route: ActivatedRoute) {}
+  constructor(public dialog: MatDialog, private route: ActivatedRoute, private gameService: GameService) {}
 
   ngOnInit(): void {
     this.newGame();
@@ -35,9 +36,6 @@ export class GameComponent implements OnInit {
       console.log(params['id']);
       this.subscribeToGame(params['id']);
     });
-    
-    // Test-Daten hinzufügen, um zu sehen, ob es in Firebase erscheint
-    // this.addGame(this.game.toJSON());
   }
 
   newGame() {
@@ -71,7 +69,7 @@ export class GameComponent implements OnInit {
 
   async addGame(game: { game: string }) {
     try {
-      const docRef = await addDoc(this.getGameRef(), game);
+      const docRef = await addDoc(this.gameService.getGameRef(), game);
       console.log("Document written with ID: ", docRef.id);
     } catch (err) {
       console.error("Error adding document: ", err);
@@ -79,7 +77,7 @@ export class GameComponent implements OnInit {
   }
 
   subscribeToGame(gameId: string) {
-    const gameDocRef = this.getSingleDocRef('games', gameId);
+    const gameDocRef = this.gameService.getSingleDocRef('games', gameId);
     const game$ = docData(gameDocRef) as Observable<Game>;
     game$.subscribe((game: any) => {
       console.log('Game update', game);
@@ -90,11 +88,5 @@ export class GameComponent implements OnInit {
     });
   }
 
-  getGameRef() {
-    return collection(this.firestore, 'games');
-  }
-
-  getSingleDocRef(colId: string, docId: string) {
-    return doc(this.firestore, colId, docId);
-  }
+  
 }
