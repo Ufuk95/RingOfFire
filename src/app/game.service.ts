@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Firestore, collection, addDoc, doc } from '@angular/fire/firestore';
+import { Firestore, addDoc, collection, doc, updateDoc } from '@angular/fire/firestore';
 import { inject } from '@angular/core';
 import { Game } from '../models/game';
 import { Router } from '@angular/router';
@@ -24,13 +24,21 @@ export class GameService {
       });
   }
 
-
-  
   getGameRef() {
     return collection(this.firestore, 'games');
   }
 
   getSingleDocRef(colId: string, docId: string) {
     return doc(this.firestore, colId, docId);
+  }
+
+  async updateGame(gameId: string, gameData: Partial<Game>) {
+    try {
+      const gameDocRef = this.getSingleDocRef('games', gameId);
+      await updateDoc(gameDocRef, gameData);
+      console.log("Game updated successfully");
+    } catch (err) {
+      console.error("Error updating game: ", err);
+    }
   }
 }

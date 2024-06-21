@@ -9,7 +9,7 @@ import { DialogAddPlayerComponent } from '../dialog-add-player/dialog-add-player
 import { GameInfoComponent } from '../game-info/game-info.component';
 import { ActivatedRoute } from '@angular/router';
 import { Firestore, collection, collectionData, doc, docData, addDoc } from '@angular/fire/firestore';
-import { Injectable, inject } from '@angular/core';
+import { inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { GameService } from '../game.service';
 
@@ -27,6 +27,7 @@ export class GameComponent implements OnInit {
   pickCardAnimation = false;
   currentCard: string = '';
   game!: Game;
+  gameId!: string;
 
   constructor(public dialog: MatDialog, private route: ActivatedRoute, private gameService: GameService) {}
 
@@ -34,7 +35,8 @@ export class GameComponent implements OnInit {
     this.newGame();
     this.route.params.subscribe((params) => {
       console.log(params['id']);
-      this.subscribeToGame(params['id']);
+      this.gameId = params['id'];
+      this.subscribeToGame(this.gameId);
     });
   }
 
@@ -47,11 +49,13 @@ export class GameComponent implements OnInit {
     if (!this.pickCardAnimation) {
       this.currentCard = this.game.stack.pop() as string;
       this.pickCardAnimation = true;
+      this.saveGame();
       this.game.currentPlayer++;
       this.game.currentPlayer = this.game.currentPlayer % this.game.players.length;
       setTimeout(() => {
         this.game.playedCards.push(this.currentCard);
         this.pickCardAnimation = false;
+        this.saveGame();
       }, 1000);
       console.log(this.game);
     }
@@ -63,6 +67,7 @@ export class GameComponent implements OnInit {
     dialogRef.afterClosed().subscribe((name: string) => {
       if (name && name.length > 0) {
         this.game.players.push(name);
+        this.saveGame();
       }
     });
   }
@@ -88,5 +93,7 @@ export class GameComponent implements OnInit {
     });
   }
 
-  
+  saveGame() {
+    this.gameService.updateGame(this.gameId, this.game.toJSON());
+  }
 }
