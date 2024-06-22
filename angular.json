@@ -63,10 +63,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "ringOfFire:build:production"
+              "buildTarget": "ringoffire:build:production"
             },
             "development": {
-              "buildTarget": "ringOfFire:build:development"
+              "buildTarget": "ringoffire:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -74,7 +74,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "buildTarget": "ringOfFire:build"
+            "buildTarget": "ringoffire:build"
           }
         },
         "test": {
